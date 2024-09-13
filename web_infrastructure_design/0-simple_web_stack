@@ -1,0 +1,70 @@
+To fulfill the task, I'll outline the steps to design a simple web infrastructure on a whiteboard that meets the specified requirements. Here's how you would approach the task and explain it:
+
+### Simple Web Infrastructure Design
+
+#### Layout Details
+
+1. **1 Server**
+   - **Component Function**: Hosts all elements of the web application.
+   - **IP Address**: 8.8.8.8, used for DNS records.
+
+2. **1 Web Server (Nginx)**
+   - **Role**: Receives incoming HTTP/HTTPS requests, serves static content directly, and forwards requests for dynamic content to the application server.
+
+3. **1 Application Server**
+   - **Role**: Handles the execution of the website's business logic, processes the web requests, and communicates with the database to serve dynamic content.
+
+4. **1 Application Files (Codebase)**
+   - **Role**: Contains the code and resources necessary for the application functionality, stored typically in a directory on the server and leveraged by the application server.
+
+5. **1 Database (MySQL)**
+   - **Role**: Stores persistent data needed by the application, such as user accounts, content data, and other structured information required for dynamic web interaction.
+
+6. **Domain Name (`foobar.com`) Configured with a `www` Record**
+   - **Role**: Maps to the server's IP address (8.8.8.8) to humanize the process of accessing the server's services.
+
+#### Process Flow When User Accesses `www.foobar.com`
+
+1. **User Request**: User enters `www.foobar.com` into a web browser.
+2. **DNS Resolution**: The domain `www.foobar.com` gets resolved to the IP `8.8.8.8` using DNS records, particularly a `CNAME` or an `A` record.
+3. **Nginx Receives Request**:
+   - Handles static files directly.
+   - Forwards requests for dynamic processing to the application server.
+4. **Application Server Interaction**:
+   - Processes incoming web requests using application logic.
+   - Queries are sent to MySQL if needed.
+5. **MySQL Database Operations**:
+   - Retrieves or modifies data as requested by the application server.
+6. **Application Server Response**:
+   - Prepares a response after processing logic and retrieving necessary data.
+7. **Nginx Sends Response**: Delivers the final content back to the user's web browser.
+8. **User Views Webpage**: The user's browser renders and displays the content.
+
+#### Component Roles Explained
+
+- **Server**: The central machine on which all services (web, application, database) are running.
+- **Domain Name**: Provides an easy-to-remember path to locate the server, translating to an IP address via DNS.
+- **Web Server (Nginx)**: Interfaces with clients, handling requests and serving files or forwarding to the app server.
+- **Application Server**: Executes the server-side application logic.
+- **Database (MySQL)**: Maintains structured data storage, enables querying for dynamic web content.
+- **DNS Record `www`**: Typically a CNAME pointing to an A record, helping direct web traffic correctly.
+
+#### Challenges with This Infrastructure
+
+1. **Single Point of Failure (SPOF)**: 
+   - All services running on a single server means a failure in hardware, software, or network can take the entire site offline.
+2. **Downtime for Maintenance**: 
+   - Performing updates, patches, or deployments often requires taking the server offline, causing downtime.
+3. **Scalability Issues**: 
+   - A single server limits the ability to handle high traffic volumes and could lead to performance degradation if loads significantly increase.
+
+#### Diagram on a Whiteboard
+
+1. **User**: Show a user icon initiating a request to `www.foobar.com`.
+2. **DNS**: Illustrate DNS translation of the domain name to 8.8.8.8.
+3. **Nginx**: Illustrate it receiving the request and sending static content or forwarding to the application server.
+4. **Application Server**: Process requests and query the database.
+5. **MySQL Database**: Handles data queries and transactions.
+6. **Response**: Arrows pointing back to the user, showing data flow back to the browser.
+
+This infrastructure outlines a straightforward approach where the major components are combined within a single server environment, illustrating basic web app deployment setups.

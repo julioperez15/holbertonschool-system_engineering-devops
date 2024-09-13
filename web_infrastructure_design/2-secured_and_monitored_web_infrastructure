@@ -1,0 +1,81 @@
+To design a secured and monitored web infrastructure that hosts the website `www.foobar.com`, we'll incorporate security measures, encrypted traffic, and monitoring capabilities. Below is a conceptual design and explanation of the various components involved in this infrastructure.
+
+### Secured and Monitored Web Infrastructure
+
+#### Components
+
+1. **3 Servers**
+   - **Role**: Distribute tasks for web hosting, application processing, and database management, improving fault tolerance and performance.
+
+2. **1 Web Server (Nginx)**
+   - **Role**: Handles HTTP requests, serves static content, and communicates with the application server for dynamic content. Configured to support HTTPS.
+
+3. **1 Application Server**
+   - **Role**: Executes the website’s business logic, generates dynamic content, and interfaces with the database.
+
+4. **1 Load Balancer (HAProxy)**
+   - **Role**: Distributes incoming web traffic across multiple servers, ensuring balanced workload and improving availability.
+   - **SSL Termination**: Termination at the load balancer provides decryption, which reduces the load on backend servers but can expose internal traffic if not managed securely.
+
+5. **1 SSL Certificate**
+   - **Role**: Encrypts data in transit, served by Nginx to ensure secure connections over HTTPS, protecting user data and preventing man-in-the-middle attacks.
+
+6. **1 Database (MySQL)**
+   - **Role**: Stores persistent data, with a single instance managing all write operations. This setup can present a performance bottleneck during high write operations.
+
+7. **3 Firewalls**
+   - **Role**: Control traffic to and from each server, acting as barriers against unauthorized access and attacks. 
+   - **Deployment**: Installed between the load balancer, web server, application server, and database.
+
+8. **3 Monitoring Clients**
+   - **Role**: Collects performance data, logs, and metrics for analysis and reporting. Applications could range from Sumologic to open-source options like Prometheus or Grafana.
+   - **Data Collection**: Monitoring clients run on each server, collecting metrics via agents or log forwarders, transmitting data to a centralized dashboard for analysis.
+
+### Flow of Operations
+
+1. **User Request**: 
+   - User accesses the site via `https://www.foobar.com`.
+   - DNS directs the user to the load balancer handling `www.foobar.com`.
+
+2. **Firewall Check**: 
+   - Incoming traffic is filtered by the first firewall. Only allowed HTTP/S traffic may pass.
+
+3. **Load Balancer**:
+   - Manages and distributes traffic across available servers using a strategy (e.g., Round-Robin).
+
+4. **Nginx Web Server**:
+   - Intercepts the request post HTTPS termination.
+   - Serves or forwards requests for dynamic content to the application server.
+
+5. **Application Server**:
+   - Processes application logic.
+   - Queries MySQL for data as required.
+
+6. **Database Interaction**:
+   - Primary MySQL processes and stores data. A replication setup can distribute read loads if configured.
+
+7. **Monitor Traffic and Operations**:
+   - Monitoring systems track QPS (queries per second) and overall server health, providing alerts based on thresholds.
+
+### Evaluation and Considerations
+
+#### Benefits of Additional Elements
+
+- **Firewalls**: Adds a powerful layer of security, blocking unauthorized access and securing server communication.
+  
+- **HTTPS with SSL**: Protects data during transmission, essential for maintaining user trust and security compliance.
+  
+- **Monitoring Clients**: Collect and visualize data, which aids in identifying issues, capacity planning, and ensuring uptime.
+
+#### Issues and Challenges
+
+1. **SSL Termination at Load Balancer**:
+   - This design decrypts traffic at the load balancer, exposing back-end traffic unless re-encrypted, potentially making it vulnerable to attacks.
+
+2. **Single-MySQL Write Node**:
+   - A single MySQL node for write operations introduces latency or failures under heavy write loads. A more scalable architecture would involve clustering, with multiple nodes accepting writes.
+   
+3. **Uniform Server Components**:
+   - Running all services (app, web, database) on every server can complicate scaling and updates, introducing challenges like configuration drift and interdependency failures.
+
+To enhance resilience, further steps like adding failover load balancers, implementing database clustering with high availability (HA) features, and enforcing stricter monitoring are suggested. Monitoring systems could be expanded to track additional metrics, ensuring a comprehensive view of infrastructure status.

@@ -1,0 +1,63 @@
+To design a distributed web infrastructure with three servers for hosting the website `www.foobar.com`, we will consider the given requirements and provide an explanation for each component added to improve the setup.
+
+### Web Infrastructure Design
+
+#### Components
+
+1. **2 Servers**
+   - **Role**: By having two servers, we distribute different responsibilities, enhancing scalability and reliability.
+
+2. **1 Web Server (Nginx)**
+   - **Role**: Manages client requests, serves static files, and forwards application requests to the application server. Hosted on one of the servers.
+
+3. **1 Application Server**
+   - **Role**: Runs the application, processes business logic, and retrieves or updates data as needed. The application server handles requests forwarded by the Nginx web server.
+
+4. **1 Load Balancer (HAProxy)**
+   - **Role**: Distributes incoming traffic between multiple servers, improving load management, reliability, and availability.
+   - **Distribution Algorithm**: Configure with a **Round-Robin** algorithm. This method cycles through servers evenly, distributing the load across all servers. It’s simple and effective when all servers have an equal capacity.
+   - **Setup Type**: **Active-Active**, where all servers behind the load balancer actively handle requests. This increases overall capacity and fault tolerance.
+
+5. **The Codebase (Application Files)**
+   - **Role**: The codebase resides on the application server where the business logic processing occurs. This allows dynamic interactions with users.
+
+6. **1 Database (MySQL), Primary-Replica Configuration**
+   - **Role**: Primary-Replica or Master-Slave. The **Primary** (or Master) node handles all write operations, ensuring consistency, while **Replica** (or Slave) nodes handle read requests to offload work from the main database.
+   - **Primary Node**: Responsible for data integrity, processing all updates, and propagating those changes to replica nodes.
+   - **Replica Node**: Provides data redundancy and enhances read performance by handling read requests.
+
+### User Access Flow
+
+1. **User Request**: Initiates a request to `www.foobar.com`.
+2. **DNS Resolution**: Maps `www.foobar.com` to the load balancer's IP.
+3. **Load Balancer (HAProxy)**: Distributes HTTP requests using a Round-Robin algorithm to the available web server instances.
+4. **Nginx Web Server**: On a selected server, processes requests, delivering static content or forwarding dynamic queries to the application server.
+5. **Application Server**: Executes application code, processes any data manipulations or retrievals, and interfaces with the database.
+6. **Database Operations**:
+   - **Primary Database**: Updates operations and syncs these changes with replicas.
+   - **Replica Database**: Handles read queries to optimize efficiency and speed up data retrieval.
+7. **Return Path**: Responses bubble back through the application server, to the web server, and then to the user via the load balancer.
+
+### Evaluation and Considerations
+
+#### Benefits of Additional Elements
+
+- **Load Balancer**: Enhances reliability by distributing traffic; serves as a gateway to prevent overload on any single server.
+- **Multiple Servers**: Guarantees high availability, ensuring that some services remain online if one server fails.
+
+#### Issues and Challenges
+
+1. **Single Point of Failure (SPOF)**:
+   - A SPOF could occur with the load balancer if not replicated, or the database’s primary if disconnected from replicas without failover mechanisms.
+
+2. **Security Concerns**:
+   - The system lacks explicit firewalls to intercept unauthorized access.
+   - No mention of HTTPS, which secures data in transit through encryption; important for protecting sensitive traffic.
+
+3. **No Monitoring**:
+   - Absence of monitoring means issues may go undetected until user complaints, impacting uptime and reliability.
+   - Implementation of logging systems and monitoring tools (like Prometheus, Grafana) is advisable.
+
+### Conclusion
+
+This distributed web infrastructure, while an improvement over a single server, still faces potential vulnerabilities that would need addressing for production scenarios. Firewalls and encryption standards (HTTPS) would enhance security, and introducing monitoring tools would provide better oversight and response capacity.

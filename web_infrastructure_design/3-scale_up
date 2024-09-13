@@ -1,0 +1,58 @@
+To scale up the web infrastructure and improve availability, performance, and reliability, we will add more servers and configure a load balancer cluster. This setup will involve separating application components onto dedicated servers. Here’s how the expanded infrastructure could be organized:
+
+### Enhanced Web Infrastructure Design
+
+#### Components
+
+1. **1 Additional Server**
+   - **Reason for Addition**: This server will help distribute the workload by hosting specific components of the infrastructure, thereby enhancing scalability and fault tolerance. By splitting the components across dedicated servers, we optimize resource utilization and capacity management.
+
+2. **2 Load Balancers (HAProxy) Configured as a Cluster**
+   - **Reason for Addition**: High Availability. A load balancer cluster ensures that, if one load balancer fails, traffic can still be managed by the other. This increases redundancy, prevents a single point of failure, and enhances reliability.
+
+3. **Dedicated Components on Separate Servers**
+   - **Web Server**:
+     - **Role**: Host Nginx to handle client requests, manage HTTP connections, and serve static content. By isolating it, we free resources focused specifically on web-related tasks, improving response times.
+   - **Application Server**:
+     - **Role**: Execute business logic. Dedicated application servers handle requests routed from the web server, process them, and communicate with the database. This separation allows for resource optimization and smoother scaling.
+   - **Database Server**:
+     - **Role**: Hosts MySQL database. Offloading database tasks to a dedicated server ensures better performance, as database operations can be resource-intensive. This setup allows the database to manage networking, caching, and I/O more effectively.
+
+### Infrastructure Breakdown
+
+1. **User Request Flow**: 
+   - User accesses `www.foobar.com`.
+   - DNS resolution directs traffic to the load balancer cluster for traffic management.
+   - The load balancer distributes requests to web servers.
+
+2. **Web Server (Nginx)**:
+   - Receives client requests for resources.
+   - Serves static content directly.
+   - Passes dynamic content requests to application servers.
+
+3. **Application Server**:
+   - Processes business logic and application operations.
+   - Requests data from or updates the database as necessary.
+
+4. **Database Server (MySQL)**:
+   - Handles data storage, retrieval, and transaction processing efficiently, supporting business operations.
+
+### Benefits of Each Additional Element
+
+- **Additional Server**: By dedicating a server to specific roles, we reduce interactions and CPU/RAM usage from unrelated processes, minimizing process contention and increasing performance ROI.
+  
+- **Load Balancer Cluster**: An HA cluster offers redundancy, maintaining high availability. It balances incoming requests, ensuring no server becomes a bottleneck, thereby preventing overloads and minimizing response lag.
+
+- **Separation of Components**: 
+  - **Isolation**: Each component operates independently, which helps in discrete scaling. For example, if the application server needs more capacity, instances can be quickly added without impacting web or database servers.
+  - **Optimization**: Resource allocation is more precise, allowing tuning for specific workloads based on server roles, aiding efficient scaling, upgrades, and troubleshooting.
+
+### Implementation Considerations
+
+- **Downtime Minimization**: By distributing services across multiple servers, we lower the risk that maintenance or failures in one component will impact the overall system.
+  
+- **Scalability**: The ability to add more servers into each category (web, application, database) supports horizontal scaling.
+
+- **Security and Monitoring**: Ensure that firewalls, monitoring tools, and encryption (HTTPS) are integrated to maintain service security and reliability.
+
+This architectural change not only bolsters the system’s resilience against traffic spikes but also sets a clearer path for scalable growth, positioning the infrastructure for efficient resource use and enhanced failover capabilities.
